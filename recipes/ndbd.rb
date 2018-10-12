@@ -10,12 +10,69 @@ end
 
 if node['ndb']['systemd'] == false
    node.override['ndb']['systemd'] = "false"
-end  
+end
 
 ndb_connectstring()
 
 Chef::Log.info "Hostname is: #{node['hostname']}"
 Chef::Log.info "IP address is: #{node['ipaddress']}"
+
+#
+# On Disk columns
+#
+if node['ndb']['nvme']['disks'].empty?
+  directory node['ndb']['diskdata_dir'] do
+    owner node['ndb']['user']
+    group node['ndb']['group']
+    mode "750"
+    action :create
+  end
+else
+  directory "#{node['ndb']['nvme']['mount_base_dir']}" do
+    owner node['ndb']['user']
+    group node['ndb']['group']
+    mode "755"
+    action :create
+  end
+end
+
+index=0
+mountPrefix="#{node['ndb']['nvme']['mount_base_dir']}/#{node['ndb']['nvme']['mount_disk_prefix']}"
+
+for nvmeDisk in node['ndb']['nvme']['disks'] do
+  if "#{node['ndb']['nvme']['format']}" == "true"
+    bash 'format_nvme_disk' do
+      user 'root'
+      code <<-EOF
+        set -e
+        mkfs.ext4 -F #{nvmeDisk}
+      EOF
+    end
+  end
+
+  mountPoint="#{mountPrefix}#{index}"
+
+  directory "#{mountPoint}" do
+    owner node['ndb']['user']
+    group node['ndb']['group']
+    mode "755"
+    action :create
+  end
+
+  mount "#{mountPoint}" do
+    device nvmeDisk
+    fstype 'ext4'
+  end
+
+  diskDataDir="#{mountPoint}/#{node['ndb']['ndb_disk_columns_dir_name']}"
+  directory "#{diskDataDir}" do
+    owner node['ndb']['user']
+    group node['ndb']['group']
+    mode "750"
+    action :create
+  end
+  index+=1
+end
 
 directory node['ndb']['data_dir'] do
   owner node['ndb']['user']
@@ -39,7 +96,7 @@ if node.attribute?(:ndb) && node['ndb'].attribute?(:ndbd) && node['ndb']['ndbd']
   end
 else
   for ndbd in node['ndb']['ndbd']['private_ips']
-    if my_ip.eql? ndbd 
+    if my_ip.eql? ndbd
       Chef::Log.info "Found matching IP address in the list of data nodes: #{ndbd}. ID= #{id}"
       found_id = id
     end
@@ -68,12 +125,12 @@ for script in node['ndb']['scripts']
     mode 0751
     variables({ :node_id => found_id })
   end
-end 
+end
 
 
 service_name = "ndbmtd"
 
-if node['ndb']['systemd'] != "true" 
+if node['ndb']['systemd'] != "true"
 
 service "#{service_name}" do
   provider Chef::Provider::Service::Init::Debian
@@ -104,7 +161,7 @@ case node['platform_family']
   when "debian"
 systemd_script = "/lib/systemd/system/#{service_name}.service"
   when "rhel"
-systemd_script = "/usr/lib/systemd/system/#{service_name}.service" 
+systemd_script = "/usr/lib/systemd/system/#{service_name}.service"
 end
 
 template systemd_script do
@@ -136,7 +193,7 @@ if node['kagent']['enabled'] == "true"
   kagent_config service_name do
     service "NDB" # #{found_id}
     log_file "#{node['ndb']['log_dir']}/ndb_#{found_id}_out.log"
-    restart_agent false    
+    restart_agent false
     action :add
   end
 
@@ -148,8 +205,8 @@ end
 if (node['ndb']['interrupts_isolated_to_single_cpu'] == "true") && (not ::File.exists?( "#{node['mysql']['base_dir']}/.balance_irqs"))
  case node['platform_family']
   when "debian"
-    
-    file "/etc/default/irqbalance" do 
+
+    file "/etc/default/irqbalance" do
       owner node['hdfs']['user']
       action :delete
     end
@@ -176,14 +233,14 @@ if (node['ndb']['interrupts_isolated_to_single_cpu'] == "true") && (not ::File.e
       user "root"
       code <<-EOF
           service irqbalance stop
-          source /etc/default/irqbalance 
+          source /etc/default/irqbalance
           irqbalance
           update-grub
       touch #{node['mysql']['base_dir']}/.balance_irqs
       EOF
       not_if { ::File.exists?( "#{node['mysql']['base_dir']}/.balance_irqs" ) }
     end
-    
+
   when "rhel"
     execute "set_interrupts_to_first_cpu" do
       user "root"
@@ -205,19 +262,19 @@ kagent_keys "#{homedir}" do
   cb_user "#{node['ndb']['user']}"
   cb_group "#{node['ndb']['group']}"
   cb_name "ndb"
-  cb_recipe "mgmd"  
+  cb_recipe "mgmd"
   action :get_publickey
-end  
+end
 
 case node['ndb']['systemd']
 when "true"
   ndb_start "start-ndbd-systemd" do
     action :start_if_not_running_systemd
-  end 
+  end
 else
   ndb_start "start-ndbd-sysv" do
     action :start_if_not_running
-  end 
+  end
 end
 
 #

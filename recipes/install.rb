@@ -9,7 +9,7 @@ end
 #
 user node['ndb']['user'] do
   home "/home/#{node['ndb']['user']}"
-  manage_home true  
+  manage_home true
   gid node['ndb']['group']
   action :create
   shell "/bin/bash"
@@ -80,14 +80,6 @@ directory node['ndb']['BackupDataDir'] do
   mode "750"
   action :create
 end
-
-directory node['ndb']['diskdata_dir'] do
-  owner node['ndb']['user']
-  group node['ndb']['group']
-  mode "750"
-  action :create
-end
-
 
 directory node['mysql']['version_dir'] do
   owner node['ndb']['user']
@@ -180,7 +172,7 @@ end
 
 
 
-if "#{node['ndb']['aws_enhanced_networking']}" == "true" 
+if "#{node['ndb']['aws_enhanced_networking']}" == "true"
      case node['platform']
      when 'debian', 'ubuntu'
        ndb_ixgbevf "enhanced_ec2_networking" do
@@ -221,4 +213,3 @@ ulimit_domain node['ndb']['user'] do
     value -19
   end
 end
-

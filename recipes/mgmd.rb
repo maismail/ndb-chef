@@ -10,7 +10,7 @@ end
 
 if node['ndb']['systemd'] == false
    node.override['ndb']['systemd'] = "false"
-end  
+end
 
 
 ndb_connectstring()
@@ -31,7 +31,7 @@ for mgm in node['ndb']['mgmd']['private_ips']
     found_id = id
   end
   id += 1
-end 
+end
 Chef::Log.info "Found ID IS: #{found_id}"
 Chef::Log.info "Backup with cron is: #{node['ndb']['cron_backup']}"
 
@@ -69,23 +69,6 @@ template "#{node['ndb']['scripts_dir']}/native_ndb_backup.sh" do
 end
 
 #
-# These are helper scripts for exapnding tables with on-disk columns
-#
-template "#{node['ndb']['scripts_dir']}/manage-disk-table.py" do
-    source "manage-disk-table.py.erb"
-    owner node['ndb']['user']
-    group node['ndb']['group']
-    mode 0700
-end
-
-template "#{node['ndb']['scripts_dir']}/create-disk-table.sh" do
-    source "create-disk-table.sh.erb"
-    owner node['ndb']['user']
-    group node['ndb']['group']
-    mode 0700
-end
-
-#
 # Install cron backup job on the node with the first ndb_mgmd
 #
 if found_id == node['mgm']['id'] && "#{node['ndb']['cron_backup']}" == "true"
@@ -107,8 +90,8 @@ if found_id == node['mgm']['id'] && "#{node['ndb']['cron_backup']}" == "true"
     #{node['ndb']['scripts_dir']}/native_ndb_backup.sh
   }.join(' ')
   end
-  
-  
+
+
 end
 
 datanodes= node['ndb']['ndbd']['private_ips'].join(" ")
@@ -122,7 +105,7 @@ for script in node['mgm']['scripts'] do
         :datanodes => datanodes,
     })
   end
-end 
+end
 
 service_name = "ndb_mgmd"
 
@@ -157,7 +140,7 @@ else # systemd == true
   when "debian"
     systemd_script = "/lib/systemd/system/#{service_name}.service"
   when "rhel"
-    systemd_script = "/usr/lib/systemd/system/#{service_name}.service" 
+    systemd_script = "/usr/lib/systemd/system/#{service_name}.service"
   end
 
   template systemd_script do
@@ -180,6 +163,11 @@ end
 # Need to call get_ndbapi_addrs to set them before instantiating config.ini
 get_ndbapi_addrs()
 
+diskDataDir=node['ndb']['diskdata_dir']
+if !node['ndb']['nvme']['disks'].empty?
+  diskDataDir="#{node['ndb']['nvme']['mount_base_dir']}/#{node['ndb']['nvme']['mount_disk_prefix']}0/#{node['ndb']['ndb_disk_columns_dir_name']}"
+end
+
 template "#{node['ndb']['root_dir']}/config.ini" do
   source "config.ini.erb"
   owner node['ndb']['user']
@@ -187,7 +175,8 @@ template "#{node['ndb']['root_dir']}/config.ini" do
   mode 0644
   action :create_if_missing
   variables({
-              :num_client_slots => node['ndb']['num_ndb_slots_per_client'].to_i
+              :num_client_slots => node['ndb']['num_ndb_slots_per_client'].to_i,
+              :diskDataDir => diskDataDir
             })
 end
 
@@ -219,16 +208,16 @@ Chef::Log.info "Home dir is #{homedir}. Generating ssh keys..."
 kagent_keys "#{homedir}" do
   cb_user node['ndb']['user']
   cb_group node['ndb']['group']
-  action :generate  
-end  
+  action :generate
+end
 
 kagent_keys "#{homedir}" do
   cb_user node['ndb']['user']
   cb_group node['ndb']['group']
   cb_name "ndb"
-  cb_recipe "mgmd"  
+  cb_recipe "mgmd"
   action :return_publickey
-end  
+end
 
 
 #node['kagent']['upgrade'] - no need to restart the service, it's done already .

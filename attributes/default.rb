@@ -117,12 +117,18 @@ default['ndb']['base_dir']                            = "#{node['ndb']['root_dir
 
 default['ndb']['InitialLogFileGroup']                 = "undo_buffer_size=128M; "
 # NDB Cluster Disk Data data files and undo log files are placed in the diskdata_dir directory
-default['ndb']['diskdata_dir']                        = "#{node['ndb']['root_dir']}/ndb_disk_columns"
+default['ndb']['ndb_disk_columns_dir_name']           = "ndb_disk_columns"
+default['ndb']['diskdata_dir']                        = "#{node['ndb']['root_dir']}/#{node['ndb']['ndb_disk_columns_dir_name']}"
 default['ndb']['nvme']['small_file']                  = "2000"
 default['ndb']['nvme']['med_file']                    = "4000"
 default['ndb']['nvme']['large_file']                  = "8000"
 default['ndb']['nvme']['logfile_size']                = ""
 default['ndb']['nvme']['num_logfiles']                = ""
+
+default['ndb']['nvme']['mount_base_dir']              = "/mnt/nvmeDisks"
+default['ndb']['nvme']['mount_disk_prefix']           = "nvme"
+default['ndb']['nvme']['disks']                       = []
+default['ndb']['nvme']['format']                      = 'true'
 
 default['ndb']['BackupDataDir']                       = "#{node['ndb']['root_dir']}/ndb/backups"
 
@@ -226,3 +232,8 @@ default['ndb']['backup_time']                         = "03:00"
 
 default['ndb']['systemd']                             = node['systemd']
 
+
+#LocationDomainId
+default['ndb']['mgmd']['private_ips_domainIds']          = {}
+default['ndb']['ndbd']['private_ips_domainIds']          = {}
+default['ndb']['mysqld']['private_ips_domainIds']        = {}
