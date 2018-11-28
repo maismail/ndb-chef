@@ -48,6 +48,11 @@ when "rhel"
   package "libaio" do
     action :install
   end
+
+  package "numactl" do
+    action :install
+  end
+
   if "#{node['ndb']['version']}.#{node['ndb']['majorVersion']}".to_f < 7.5
     #scripts/mysql_install_db requires perl-Data-Dumper
     package "perl-Data-Dumper" do
