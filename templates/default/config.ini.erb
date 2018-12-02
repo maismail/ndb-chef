@@ -285,6 +285,7 @@ HostName=<%= theMysqld[0] %>
 <% if (node.attribute?(:ndb) && node['ndb'].attribute?(:mysqld) && node['ndb']['mysqld'].attribute?(:private_ips) && !node['ndb']['mysqld']['private_ips'].empty?) -%>
 <% for mysql in node['ndb']['mysqld']['private_ips'] -%>
 
+<% for count in 1..@num_ndb_slots_per_mysqld -%>
 [MYSQLD]
 NodeId=<%= hostId %>
 <% if node['ndb']['mysqld']['private_ips_domainIds'].has_key?(mysql) -%>
@@ -301,11 +302,13 @@ HostName=<%= mysql %>
 
 <% end -%>
 
+<% end -%>
+
 <% hostId = node['nn']['id'] -%>
 <% if (node.attribute?(:hops) && node['hops'].attribute?(:nn) && node['hops']['nn'].attribute?(:private_ips) && !node['hops']['nn']['private_ips'].empty?) -%>
 <% for nn in node['hops']['nn']['private_ips'] -%>
 
-<% for count in 1..@num_client_slots -%>
+<% for count in 1..@num_ndb_slots_per_client -%>
 [API]
 NodeId=<%= hostId %>
 <% if node['hops']['nn']['private_ips_domainIds'].has_key?(nn) -%>

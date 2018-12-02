@@ -175,7 +175,8 @@ template "#{node['ndb']['root_dir']}/config.ini" do
   mode 0644
   action :create_if_missing
   variables({
-              :num_client_slots => node['ndb']['num_ndb_slots_per_client'].to_i,
+              :num_ndb_slots_per_client => node['ndb']['num_ndb_slots_per_client'].to_i,
+              :num_ndb_slots_per_mysqld => node['ndb']['num_ndb_slots_per_mysqld'].to_i,
               :diskDataDir => diskDataDir
             })
 end

@@ -393,9 +393,13 @@ attribute "ndb/nvme/format",
           :type => "string"
 
 attribute "ndb/num_ndb_slots_per_client",
-          :description => "Number of NDB connection slots per mysqld/api nodes",
+          :description => "Number of NDB connection slots per api node",
           :type => "string"
-          
+
+attribute "ndb/num_ndb_slots_per_mysqld",
+          :description => "Number of NDB connection slots per mysqld node",
+          :type => "string"
+
 # attribute "btsync/ndb/seeder_secret",
 # :display_name => "Ndb seeder's random secret key.",
 # :description => "20 chars or more (normally 32 chars)",

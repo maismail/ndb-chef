@@ -146,6 +146,7 @@ default['ndb']['mgm_dir']                             = "#{node['ndb']['root_dir
 # MySQL Server Parameters
 default['ndb']['mysql_server_dir']                    = "#{node['ndb']['root_dir']}/mysql"
 default['ndb']['num_ndb_slots_per_client']            = 1
+default['ndb']['num_ndb_slots_per_mysqld']            = 1
 
 # Max time that the mysqld and memcached will wait for the MySQL Cluster to be up and running.
 # If the mysqld or memcached starts and the MySQL Cluster isn't running, it will not connect and will

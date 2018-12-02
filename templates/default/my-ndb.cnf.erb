@@ -27,12 +27,12 @@ default-storage-engine = ndbcluster
 # optimizations to improve performance of NDB
 #################################################
 #
-# We only use the mysql-server for SELECT COUNT(*) operations. 
-# This makes most other queries become much slower. 
-# It can have a significant effect on performance. 
+# We only use the mysql-server for SELECT COUNT(*) operations.
+# This makes most other queries become much slower.
+# It can have a significant effect on performance.
 ndb-use-exact-count=0
 
-# flush the adaptive-send buffer immediately 
+# flush the adaptive-send buffer immediately
 ndb-force-send=0
 
 # allow indexes to be used on ndb nodes (rather than joins performed in MySQL Server)
@@ -42,12 +42,12 @@ optimizer_switch=engine_condition_pushdown=on
 ndb-join-pushdown=1
 
 # use the cluster connection pool to reduce cluster connection setup time
-ndb-cluster-connection-pool=<%= node['ndb']['num_ndb_slots_per_client'] %>
+ndb-cluster-connection-pool=<%= node['ndb']['num_ndb_slots_per_mysqld'] %>
 
 # Log more data at MySQL Server about ndb
 ndb-extra-logging=0
 
-# for autoincrement, size of prefetching 
+# for autoincrement, size of prefetching
 ndb-autoincrement-prefetch-sz=1024
 
 # NDB transaction batche sizes. Higher batch sizes to optimize for throughput.
