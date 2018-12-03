@@ -79,7 +79,7 @@ MaxNoOfOrderedIndexes=<%= node['ndb']['MaxNoOfOrderedIndexes'] %>
 
 MaxNoOfUniqueHashIndexes=<%= node['ndb']['MaxNoOfUniqueHashIndexes'] %>
 
-MaxDMLOperationsPerTransaction=<%= node['ndb']['MaxDMLOperationsPerTransaction'] %>
+#MaxDMLOperationsPerTransaction=<%= node['ndb']['MaxDMLOperationsPerTransaction'] %>
 
 MaxNoOfConcurrentIndexOperations=<%= node['ndb']['MaxNoOfConcurrentIndexOperations'] %>
 
@@ -334,6 +334,6 @@ HostName=<%= nn %>
 <% end -%>
 <% end -%>
 
-<% for id in hostId..255 -%>
-[API]
-<% end -%>
+#<% for id in hostId..255 -%>
+#[API]
+#<% end -%>
