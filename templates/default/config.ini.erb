@@ -217,7 +217,6 @@ DiskPageBufferMemory=512M
 # Supports up to Max 2 ndb_mgmds. First one gets ArbitrationRank=1, second gets lower priority ArbitrationRank=2
 #
 <% id = node['mgm']['id'] -%>
-<% rank = 1 -%>
 <% for mgmd in node['ndb']['mgmd']['private_ips'] -%>
 [NDB_MGMD]
 NodeId=<%= id %>
@@ -230,9 +229,8 @@ HostName=<%= mgmd %>
 PortNumber=<%= node['ndb']['mgmd']['port'] %>
 DataDir=<%= node['ndb']['log_dir'] %>
 LogDestination=FILE:filename=<%= node['ndb']['log_dir'] %>/cluster.log,maxsize=10000000,maxfiles=6
-ArbitrationRank=<%= rank %>
+ArbitrationRank=1
 <% id += 1 -%>
-<% rank += 1 -%>
 <% end -%>
 
 <% id = 1 -%>
@@ -288,6 +286,7 @@ LocationDomainId=<%= node['ndb']['mysqld']['private_ips_domainIds'][theMysqld[0]
 LocationDomainId=0
 <% end -%>
 HostName=<%= theMysqld[0] %>
+ArbitrationRank=2
 <% end -%>
 
 <% else -%>
@@ -305,6 +304,7 @@ LocationDomainId=<%= node['ndb']['mysqld']['private_ips_domainIds'][mysql] %>
 LocationDomainId=0
 <% end -%>
 HostName=<%= mysql %>
+ArbitrationRank=2
 <% hostId += 1 -%>
 
 <% end -%>
