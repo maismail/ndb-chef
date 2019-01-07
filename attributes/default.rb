@@ -175,13 +175,13 @@ default['mysql']['user']                              = "kthfs"
 default['mysql']['password']                          = "kthfs"
 
 # Limit the number of mgm_servers to the range 49..51
-default['mgm']['id']                                  = 49
+default['mgm']['id']                                  = 17
 # All mysqlds, memcacheds, and ndbclients (clusterj) are in the range 52..255
-default['mysql']['id']                                = 52
+default['mysql']['id']                                = 18
 # up to 65 memcacheds
 default['memcached']['id']                            = 125
 # up to 65 NameNodes
-default['nn']['id']                                   = 125
+default['nn']['id']                                   = 97
 
 # The address of the mysqld that will be used by hop
 default['ndb']['mysql_ip']                            = "10.0.2.15"
