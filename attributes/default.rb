@@ -177,7 +177,7 @@ default['mysql']['password']                          = "kthfs"
 # Limit the number of mgm_servers to the range 49..51
 default['mgm']['id']                                  = 17
 # All mysqlds, memcacheds, and ndbclients (clusterj) are in the range 52..255
-default['mysql']['id']                                = 18
+default['mysql']['id']                                = 20
 # up to 65 memcacheds
 default['memcached']['id']                            = 125
 # up to 65 NameNodes
