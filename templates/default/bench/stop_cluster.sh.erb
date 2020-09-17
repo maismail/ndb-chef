@@ -1,0 +1,5 @@
+<% for ndbnode in node['ndb']['ndbd']['private_ips'] -%>
+ssh <%= ndbnode %> "sudo systemctl stop ndbmtd"
+<% end -%>
+sudo systemctl stop mysqld
+sudo systemctl stop ndb_mgmd

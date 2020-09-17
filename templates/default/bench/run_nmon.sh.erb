@@ -1,0 +1,6 @@
+#!/bin/bash
+
+BENCH_NODES=(`grep -v "^#" bench_nodes`)
+
+echo "Starting nmon"
+/usr/bin/parallel-ssh -H "${BENCH_NODES[*]}"  -l <%=node['ndb']['user']%> -i  "pkill nmon; cd /tmp; rm *.nmon; nmon -f -s 1 -c 1000 -T"

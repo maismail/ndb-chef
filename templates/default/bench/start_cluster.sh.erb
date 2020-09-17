@@ -1,0 +1,6 @@
+sudo systemctl start ndb_mgmd
+<% for ndbnode in node['ndb']['ndbd']['private_ips'] -%>
+ssh <%= ndbnode %> "sudo systemctl start ndbmtd"
+<% end -%>
+sudo systemctl start mysqld
+
