@@ -1,0 +1,16 @@
+#!/bin/bash
+
+BENCH_NODES=(`grep -v "^#" bench_nodes`)
+
+USER=<%=node['ndb']['user']%>
+/usr/bin/parallel-ssh -H "${BENCH_NODES[*]}"  -l ${USER} -i  pkill nmon
+
+for i in ${BENCH_NODES[@]}
+do
+	connectStr="$USER@$i"
+
+	scp $connectStr:/tmp/*.nmon $1
+
+done
+
+/usr/bin/parallel-ssh -H "${BENCH_NODES[*]}"  -l $USER -i  "rm /tmp/*.nmon" 

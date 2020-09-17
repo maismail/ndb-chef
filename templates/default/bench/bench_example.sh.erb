@@ -1,0 +1,14 @@
+#!/bin/bash
+
+OUT_DIR=utilizations
+# Start nmon first on all nodes
+./run_nmon.sh 
+
+# run your benchmark code here ...
+
+
+
+# create a dir to get your nmon files, then stop and collect the nmon utilization files 
+EXP_OUT_DIR=${OUT_DIR}/results-bench-example-1
+mkdir -p $EXP_OUT_DIR
+./stop_and_collect_nmon.sh $EXP_OUT_DIR
